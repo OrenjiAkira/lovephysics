@@ -7,7 +7,7 @@ return function (t)
   -- private
   local pos = Vector:new { t[1], t[2] }
   local size = Vector:new { t[3], t[4] }
-  local centred = true
+  local centered = t.centered == false and false or true
 
   -- public
   function self:get_pos ()
@@ -18,7 +18,10 @@ return function (t)
   end
 
   function self:set_pos (v)
-    assert(v:get_type() == "vector")
+    assert(v:get_type() == "vector",
+      [[Invalid argument to method 'set_pos' (from StaticBody).
+      Expected 'vector', got: ]] .. \
+      type(v) == "table" and v.get_type and v:get_type() or type(v))
     pos:set(v:unpack())
   end
 
@@ -29,6 +32,26 @@ return function (t)
   function self:set_size (v)
     assert(v:get_type() == "vector")
     size:set(v:unpack())
+  end
+
+  function self:get_corner (corner)
+    local ps = self:get_pos()
+    local sz = self:get_size()
+    local offset = centered and ps - (sz / 2) or ps
+
+    if corner == "top_left" then
+      sz *= 0
+    else if corner == "top_right" then
+      s.y = 0
+    else if corner == "bottom_left" then
+      s.y = 0
+    else if corner == "bottom_right" then
+      sz = sz
+    else
+      error("Invalid argument to method 'get_corner' (from StaticBody): '" .. corner .. "'. Expected 'top_left', 'top_right', 'bottom_left' or 'bottom_right'.")
+    end
+
+    return offset + sz
   end
 
   return self

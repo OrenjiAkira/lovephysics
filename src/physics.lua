@@ -8,11 +8,15 @@ local function init ()
 end
 
 function physics.new_body (map)
-
+  --
 end
 
 function physics.new_map (width, height)
+  --
+end
 
+function physics.update ()
+  --
 end
 
 init()
