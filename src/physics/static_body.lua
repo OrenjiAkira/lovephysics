@@ -1,12 +1,13 @@
 
 local Vector = require "basic.vector"
+local CollisionObject = require "physics.collision_object"
 
 return function (t)
-  local self = {}
+  local self = CollisionObject()
 
   -- private
-  local pos = Vector:new { t[1], t[2] }
-  local size = Vector:new { t[3], t[4] }
+  local pos = Vector:new { t[1] or 1, t[2] or 1 }
+  local size = Vector:new { t[3] or 1, t[4] or 1 }
   local centered = t.centered == false and false or true
 
   -- public
@@ -20,8 +21,7 @@ return function (t)
   function self:set_pos (v)
     assert(v:get_type() == "vector",
       [[Invalid argument to method 'set_pos' (from StaticBody).
-      Expected 'vector', got: ]] .. \
-      type(v) == "table" and v.get_type and v:get_type() or type(v))
+      Expected 'vector', got: ]] .. type(v))
     pos:set(v:unpack())
   end
 

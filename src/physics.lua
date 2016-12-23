@@ -1,22 +1,39 @@
 
+local Map = require "physics.map"
+local DynamicBody = require "physics.dynamic_body"
+local StaticBody = require "physics.static_body"
+
 local physics = {}
-local matrix = require "basic.matrix"
-local vector = require "basic.vector"
+local maps = {}
+local bodies = {}
 
-local function init ()
-  --
+local function add_body (body, map)
+  body:set_map(map)
+  table.insert(bodies, body)
 end
 
-function physics.new_body (map)
-  --
+function physics.new_dynamic_body (map, x, y, w, h, center)
+  local body = DynamicBody {x, y, w, h, centered = center}
+  add_body(body, map)
+  return body
 end
 
-function physics.new_map (width, height)
-  --
+function physics.new_static_body (map, x, y, w, h, center)
+  local body = StaticBody {x, y, w, h, centered = center}
+  add_body(body, map)
+  return body
+end
+
+function physics.new_map (w, h, u)
+  local m = Map.new(w, h, u)
+  table.insert(maps)
+  return m
 end
 
 function physics.update ()
-  --
+  for _,map in ipairs(maps) do
+    map:draw()
+  end
 end
 
 init()
