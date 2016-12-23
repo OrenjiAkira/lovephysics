@@ -17,3 +17,11 @@ if not table.copy then table.copy = function (t)
   end
   return u
 end
+
+if not table.find then table.find = function (t, s)
+  for k,v in pairs(t) do
+    if v == s then
+      return k, s
+    end
+  end
+end
