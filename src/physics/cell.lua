@@ -1,16 +1,22 @@
 
 local cell = {}
 
+function cell:__index (k)
+  if k ~= "new" then
+    return getmetatable(self)[k]
+  end
+end
+
 function cell.new ()
   local c = {}
-  setmetatable(c, map)
+  setmetatable(c, cell)
 
   c.list = {}
   return c
 end
 
 function cell:get_list ()
-  return c.list
+  return self.list
 end
 
 function cell:add_item (item)

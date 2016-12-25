@@ -7,7 +7,7 @@ local Matrix = require "basic.matrix"
 local map = {}
 
 function map:__index (k)
-  if not k == "new" then
+  if k ~= "new" then
     return getmetatable(self)[k]
   end
 end
@@ -29,17 +29,21 @@ function map:occupy (pos, size, body)
   for i = pos.y, pos.y + size.y do
     for j = pos.x, pos.x + size.x do
       local cell = grid:get_cell(i, j)
-      cell:add_item(body)
+      if cell then
+        cell:add_item(body)
+      end
     end
   end
 end
 
-function map:unnocupy (pos, size, body)
+function map:unoccupy (pos, size, body)
   local grid = self:get_grid()
   for i = pos.y, pos.y + size.y do
     for j = pos.x, pos.x + size.x do
       local cell = grid:get_cell(i, j)
-      cell:remove_item(body)
+      if cell then
+        cell:remove_item(body)
+      end
     end
   end
 end
@@ -49,9 +53,11 @@ function map:is_occupied (pos, size)
   for i = pos.y, pos.y + size.y do
     for j = pos.x, pos.x + size.x do
       local cell = grid:get_cell(i, j)
-      local list = cell:get_list()
-      if #list > 0 then
-        return list
+      if cell then
+        local list = cell:get_list()
+        if #list > 0 then
+          return list
+        end
       end
     end
   end

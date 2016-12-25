@@ -55,12 +55,12 @@ return function (t)
     local offset = centered and ps - (sz / 2) or ps
 
     if corner == "top_left" then
-      sz *= 0
-    else if corner == "top_right" then
+      sz:mul(0)
+    elseif corner == "top_right" then
       s.y = 0
-    else if corner == "bottom_left" then
+    elseif corner == "bottom_left" then
       s.y = 0
-    else if corner == "bottom_right" then
+    elseif corner == "bottom_right" then
       sz = sz
     else
       error("Invalid argument to method 'get_corner' (from StaticBody): '" .. corner .. "'. Expected 'top_left', 'top_right', 'bottom_left' or 'bottom_right'.")

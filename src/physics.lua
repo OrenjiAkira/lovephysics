@@ -59,9 +59,9 @@ function physics.new_static_body (map, x, y, w, h, center)
   return body
 end
 
-function physics.new_map (w, h, u)
-  local m = Map.new(w, h, u)
-  table.insert(maps)
+function physics.new_map (w, h)
+  local m = Map.new(w, h)
+  table.insert(maps, m)
   return m
 end
 
@@ -86,7 +86,5 @@ function physics.update ()
   collisions:clear()
   update_dynamic_bodies()
 end
-
-init()
 
 return physics
