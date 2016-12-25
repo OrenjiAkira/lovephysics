@@ -9,7 +9,10 @@ return function (t)
   -- private
   local pos = Vector:new { t[1] or 1, t[2] or 1 }
   local size = Vector:new { t[3] or 1, t[4] or 1 }
-  local centered = t.centered == false and false or true
+  local centered
+
+  if t.centered == false then centered = false
+  else centered = true end
 
   local function occupy ()
     local map = self:get_map()

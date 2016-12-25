@@ -46,6 +46,7 @@ function queue:__tostring ()
   local s = "== Queue == \n"-- body...
   s = s .. "> SIZE: " .. self.size .. "\n"
   s = s .. "> HEAD: #" .. self.head .. ", value: " .. tostring(self.queue[self.head]) .. "\n"
+  s = s .. "> TAIL: #" .. self.tail .. ", value: " .. tostring(self.queue[self.tail]) .. "\n"
   return s
 end
 

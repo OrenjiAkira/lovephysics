@@ -21,5 +21,9 @@ return function (t)
     movement:set(v:unpack())
   end
 
+  function self:update ()
+    movement:set()
+  end
+
   return self
 end

@@ -21,8 +21,8 @@ return function ()
   end
 
   local function init ()
-    set_table_nums(layers, {})
-    set_table_nums(collision_layers, {})
+    set_table_nums(layers, { 1 })
+    set_table_nums(collision_layers, { 1 })
   end
 
   -- public

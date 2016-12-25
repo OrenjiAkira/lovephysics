@@ -6,6 +6,33 @@ local Matrix = require "basic.matrix"
 
 local map = {}
 
+local function set_drawable_debugger (m)
+  m.drawable = {}
+  m.drawable.sprbatch = love.graphics.newSpriteBatch( love.graphics.newImage("physics/squares.png"), 4096)
+  m.drawable.quads = {
+    love.graphics.newQuad(0, 0, 1, 1, m.drawable.sprbatch:getTexture():getDimensions()),
+    love.graphics.newQuad(1, 0, 1, 1, m.drawable.sprbatch:getTexture():getDimensions()),
+  }
+  local sprbatch, quads = m.drawable.sprbatch, m.drawable.quads
+  for i, j in m.grid:iterate() do
+    local id = 1
+    if i % 2 == 0 then
+      if j % 2 == 0 then
+        id = 1
+      else
+        id = 2
+      end
+    else
+      if j % 2 == 0 then
+        id = 2
+      else
+        id = 1
+      end
+    end
+    sprbatch:add(quads[id], (j - 1), (i - 1))
+  end
+end
+
 function map:__index (k)
   if k ~= "new" then
     return getmetatable(self)[k]
@@ -16,7 +43,13 @@ function map.new (w, h)
   local m = {}
   setmetatable(m, map)
 
-  m.grid = Matrix:new { w, h, Cell.new() }
+  m.grid = Matrix:new { w, h, false }
+  for i, j in m.grid:iterate() do
+    m.grid:set_cell(i, j, Cell.new())
+  end
+
+  set_drawable_debugger(m)
+
   return m
 end
 
@@ -26,9 +59,10 @@ end
 
 function map:occupy (pos, size, body)
   local grid = self:get_grid()
-  for i = pos.y, pos.y + size.y do
-    for j = pos.x, pos.x + size.x do
+  for i = pos.y, pos.y + size.y - 1 do
+    for j = pos.x, pos.x + size.x - 1 do
       local cell = grid:get_cell(i, j)
+      print(i, j)
       if cell then
         cell:add_item(body)
       end
@@ -38,8 +72,8 @@ end
 
 function map:unoccupy (pos, size, body)
   local grid = self:get_grid()
-  for i = pos.y, pos.y + size.y do
-    for j = pos.x, pos.x + size.x do
+  for i = pos.y, pos.y + size.y - 1 do
+    for j = pos.x, pos.x + size.x - 1 do
       local cell = grid:get_cell(i, j)
       if cell then
         cell:remove_item(body)
@@ -50,8 +84,8 @@ end
 
 function map:is_occupied (pos, size)
   local grid = self:get_grid()
-  for i = pos.y, pos.y + size.y do
-    for j = pos.x, pos.x + size.x do
+  for i = pos.y, pos.y + size.y - 1 do
+    for j = pos.x, pos.x + size.x - 1 do
       local cell = grid:get_cell(i, j)
       if cell then
         local list = cell:get_list()
@@ -64,15 +98,7 @@ function map:is_occupied (pos, size)
 end
 
 function map:draw ()
-  for i, row in self.grid:iteraterows() do
-    local s = "[ "
-    for j = 1, #row do
-      s = s .. row[j]
-      s = s .. " "
-    end
-    s = s .. "]"
-    print(s)
-  end
+  love.graphics.draw(self.drawable.sprbatch, 0, 0, 0, unit, unit)
 end
 
 return map
