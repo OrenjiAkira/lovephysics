@@ -92,6 +92,10 @@ function vector:size()
   return math.sqrt( self * self )
 end
 
+function vector:sqrlen ()
+  return self * self
+end
+
 function vector:normalized ()
   return self/self:size()
 end

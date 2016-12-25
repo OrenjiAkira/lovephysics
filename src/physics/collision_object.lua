@@ -7,7 +7,7 @@ return function ()
   -- private
   local layers = {}
   local collision_layers = {}
-  local map
+  local map, type_
 
   local function set_table_nums (t, l)
     for i = 1, MAX_LAYERS do
@@ -28,6 +28,11 @@ return function ()
   -- public
   function self:update ()
     -- implement on child
+  end
+
+  function self:type (t)
+    if t then type_ = t end
+    return type_
   end
 
   function self:set_map (m)

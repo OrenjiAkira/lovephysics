@@ -4,11 +4,24 @@ local CollisionObject = require "physics.collision_object"
 
 return function (t)
   local self = CollisionObject()
+  self:type("static_body")
 
   -- private
   local pos = Vector:new { t[1] or 1, t[2] or 1 }
   local size = Vector:new { t[3] or 1, t[4] or 1 }
   local centered = t.centered == false and false or true
+
+  local function occupy ()
+    local map = self:get_map()
+    local ps = self:get_corner("top_left")
+    map:occupy(ps, size, self)
+  end
+
+  local function unoccupy ()
+    local map = self:get_map()
+    local ps = self:get_corner("top_left")
+    map:unoccupy(ps, size, self)
+  end
 
   -- public
   function self:get_pos ()
@@ -22,7 +35,9 @@ return function (t)
     assert(v:get_type() == "vector",
       [[Invalid argument to method 'set_pos' (from StaticBody).
       Expected 'vector', got: ]] .. type(v))
+    unoccupy()
     pos:set(v:unpack())
+    occupy()
   end
 
   function self:get_size ()

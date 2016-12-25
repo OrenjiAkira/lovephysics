@@ -3,6 +3,7 @@ local StaticBody = require "physics.static_body"
 
 return function (t)
   local self = StaticBody(t)
+  self:type("dynamic_body")
 
   -- private
   local movement = require "basic.vector" :new {}
