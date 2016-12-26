@@ -8,7 +8,7 @@ local map = {}
 
 local function set_drawable_debugger (m)
   m.drawable = {}
-  m.drawable.sprbatch = love.graphics.newSpriteBatch( love.graphics.newImage("physics/squares.png"), 4096)
+  m.drawable.sprbatch = love.graphics.newSpriteBatch( love.graphics.newImage("physics/squares.png"), m:get_width() * m:get_height())
   m.drawable.quads = {
     love.graphics.newQuad(0, 0, 1, 1, m.drawable.sprbatch:getTexture():getDimensions()),
     love.graphics.newQuad(1, 0, 1, 1, m.drawable.sprbatch:getTexture():getDimensions()),
@@ -58,11 +58,11 @@ function map:get_grid ()
 end
 
 function map:occupy (pos, size, body)
+  print("occupy")
   local grid = self:get_grid()
   for i = pos.y, pos.y + size.y - 1 do
     for j = pos.x, pos.x + size.x - 1 do
       local cell = grid:get_cell(i, j)
-      print(i, j)
       if cell then
         cell:add_item(body)
       end
@@ -71,6 +71,7 @@ function map:occupy (pos, size, body)
 end
 
 function map:unoccupy (pos, size, body)
+  print("unoccupy")
   local grid = self:get_grid()
   for i = pos.y, pos.y + size.y - 1 do
     for j = pos.x, pos.x + size.x - 1 do
@@ -95,6 +96,18 @@ function map:is_occupied (pos, size)
       end
     end
   end
+end
+
+function map:get_width ()
+  return self:get_grid():get_width()
+end
+
+function map:get_height ()
+  return self:get_grid():get_height()
+end
+
+function map:get_dimensions ()
+  return self:get_width(), self:get_height()
 end
 
 function map:draw ()

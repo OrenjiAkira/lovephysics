@@ -9,29 +9,45 @@ return function (t)
   -- private
   local pos = Vector:new { t[1] or 1, t[2] or 1 }
   local size = Vector:new { t[3] or 1, t[4] or 1 }
-  local centered
-
-  if t.centered == false then centered = false
-  else centered = true end
 
   local function occupy ()
     local map = self:get_map()
-    local ps = self:get_corner("top_left")
+    local ps = self:get_pos()
     map:occupy(ps, size, self)
   end
 
   local function unoccupy ()
     local map = self:get_map()
-    local ps = self:get_corner("top_left")
+    local ps = self:get_pos()
     map:unoccupy(ps, size, self)
+  end
+
+  local function check_outer_bounds ()
+    local mapwidth, mapheight = self:get_map():get_dimensions()
+    if pos.x < 1 then
+      pos.x = 1
+    end
+    if pos.x + size.x - 1 >= mapwidth then
+      pos.x = mapwidth - size.x + 1
+    end
+    if pos.y < 1 then
+      pos.y = 1
+    end
+    if pos.y + size.y - 1 >= mapheight then
+      pos.y = mapheight - size.y + 1
+    end
   end
 
   -- public
   function self:get_pos ()
     local fpos = pos * 1
-    math.floor(fpos.x)
-    math.floor(fpos.y)
+    fpos.x = math.floor(fpos.x)
+    fpos.y = math.floor(fpos.y)
     return fpos
+  end
+
+  function self:get_float_pos ()
+    return pos * 1
   end
 
   function self:set_pos (v)
@@ -39,8 +55,15 @@ return function (t)
       [[Invalid argument to method 'set_pos' (from StaticBody).
       Expected 'vector', got: ]] .. type(v))
     unoccupy()
+    print(v)
     pos:set(v:unpack())
     occupy()
+  end
+
+  function self:move (v)
+    assert(v:get_type() == "vector")
+    pos:add(v)
+    check_outer_bounds()
   end
 
   function self:get_size ()
@@ -49,27 +72,8 @@ return function (t)
 
   function self:set_size (v)
     assert(v:get_type() == "vector")
+    v:set(math.floor(v.x), math.floor(v.y))
     size:set(v:unpack())
-  end
-
-  function self:get_corner (corner)
-    local ps = self:get_pos()
-    local sz = self:get_size()
-    local offset = centered and ps - (sz / 2) or ps
-
-    if corner == "top_left" then
-      sz:mul(0)
-    elseif corner == "top_right" then
-      s.y = 0
-    elseif corner == "bottom_left" then
-      s.y = 0
-    elseif corner == "bottom_right" then
-      sz = sz
-    else
-      error("Invalid argument to method 'get_corner' (from StaticBody): '" .. corner .. "'. Expected 'top_left', 'top_right', 'bottom_left' or 'bottom_right'.")
-    end
-
-    return offset + sz
   end
 
   return self

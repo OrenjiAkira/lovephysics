@@ -21,26 +21,18 @@ local function add_body (body, map)
 end
 
 local function update_movement (dynBody)
-  if dynBody:type() ~= "dynamic_body" then return end
-
   local movement = dynBody:get_movement()
-  local newpos = dynBody:get_corner("top_left") + movement
-  local size = dynBody:get_size()
-  local occupation = dynBody:get_map():is_occupied(newpos, size)
 
   if movement:sqrlen() > 0 then
     local moveable = true
-    if occupation then
-      for i = 1, #occupation do
-        local otherBody = occupation[i]
+    local colliders = dynBody:get_collision()
+    if colliders then
+      for i = 1, #colliders do
+        local otherBody = colliders[i]
         if dynBody ~= otherBody and dynBody:is_layer_colliding(otherBody) then
           if otherBody:type() == "static_body" then
             moveable = false
             print("collision with static body")
-            print(dynBody)
-            print(dynBody:get_pos() + dynBody:get_movement())
-            print(otherBody)
-            print(otherBody:get_pos())
           else
             print("collision with non-static body")
           end
@@ -49,7 +41,7 @@ local function update_movement (dynBody)
       end
     end
     if moveable then
-      dynBody:set_pos(dynBody:get_pos() + movement)
+      dynBody:move(movement)
     end
   end
 end
@@ -85,7 +77,7 @@ function physics.get_next_collision ()
   end
 end
 
-local function update_dynamic_bodies ()
+local function update_bodies ()
   for i = 1, #bodies do
     local body = bodies[i]
     if body:type() == "dynamic_body" then
@@ -97,7 +89,7 @@ end
 
 function physics.update ()
   collisions:clear()
-  update_dynamic_bodies()
+  update_bodies()
 end
 
 return physics
