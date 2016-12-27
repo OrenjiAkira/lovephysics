@@ -31,8 +31,8 @@ return function (t)
     local grid = self:get_map():get_grid()
     local pos = self:get_next_pos()
     local size = self:get_size()
-    for i = pos.y, pos.y + size.y - 1 do
-      for j = pos.x, pos.x + size.x - 1 do
+    for i = pos.y, pos.y + size.y do
+      for j = pos.x, pos.x + size.x do
         local cell = grid:get_cell(i, j)
         local list = cell and cell:get_list()
         if list and #list > 0 and not (#list == 1 and list[1] == self) then

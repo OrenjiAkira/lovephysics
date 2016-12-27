@@ -36,6 +36,7 @@ function queue:enqueue (item)
 end
 
 function queue:dequeue ()
+  if self:is_empty() then return end
   local item = self.queue[self.head]
   self.queue[self.head] = false
   self.head = self.head % self.size + 1
