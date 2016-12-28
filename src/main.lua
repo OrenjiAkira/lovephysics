@@ -5,11 +5,10 @@ local frameunit = 1/framerate
 
 local window_width = 1024
 local window_height = 640
-
-unit = 32
+local unit = 32
 
 local input = require "input"
-local physics = require "physics"
+local physics = require "basic.physics"
 local game = {}
 
 local Vector = require "basic.vector"
@@ -19,27 +18,26 @@ local Vector = require "basic.vector"
 --------------------------
 
 local world
-local dynbody1
-local statbody1
-local w1, h1, w2, h2 = 8, 6, 6, 6
+local dynbody
+local w, h = 1, 1
 local speed = .05
 
 local move = function (body, direction)
-  body:try_move(direction)
+  body:move(direction)
 end
 
 local execute = {
   hold_up = function ()
-    move(dynbody1, Vector:new { 0, -speed })
+    move(dynbody, Vector:new { 0, -speed })
   end,
   hold_down = function ()
-    move(dynbody1, Vector:new { 0,  speed })
+    move(dynbody, Vector:new { 0,  speed })
   end,
   hold_left = function ()
-    move(dynbody1, Vector:new {-speed,  0 })
+    move(dynbody, Vector:new {-speed,  0 })
   end,
   hold_right = function ()
-    move(dynbody1, Vector:new { speed,  0 })
+    move(dynbody, Vector:new { speed,  0 })
   end,
   release_quit = function ()
     love.event.quit()
@@ -47,27 +45,25 @@ local execute = {
 }
 
 function game.printbodies ()
-  print("dynamicbody: " .. tostring(dynbody1:get_float_pos()))
-  print("staticbody:  " .. tostring(statbody1:get_float_pos()))
+  print("dynamicbody: " .. tostring(dynbody:get_pos()))
 end
 
 function game.load ()
-  local w, h = window_width / unit, window_height / unit
-  world = physics.new_map(w, h)
-  dynbody1 = physics.new_dynamic_body(world, math.random(1, w - w1), math.random(1, h - h1), w1, h1, false)
-  statbody1 = physics.new_static_body(world, math.random(1, w - w2), math.random(1, h - h2), w2, h2, false)
+  local mapwidth, mapheight = window_width / unit, window_height / unit
+  --world = physics.new_map(mapwidth, mapheight)
+  world = physics.new_map_from_matrix(require 'dummy_map', unit)
+  dynbody = physics.new_body(world, math.random(1, mapwidth - w), math.random(1, mapheight - h), w, h)
   game.printbodies()
 end
 
 function game.actions ()
   local action = input.get_next_input()
   while action do
-    print("EXECUTING ACTION:", action)
     if execute[action] then execute[action]() end
-    game.printbodies()
     -- done, do next
     action = input.get_next_input()
   end
+  --game.printbodies()
 end
 
 function game.update ()
@@ -78,16 +74,21 @@ end
 
 function game.draw ()
   local correction = Vector:new { -1, -1 }
-  local p1 = (dynbody1:get_float_pos() + correction) * unit
-  local p2 = (statbody1:get_float_pos() + correction) * unit
-  local s1 = dynbody1:get_size() * unit
-  local s2 = statbody1:get_size() * unit
-  love.graphics.setColor(255, 255, 255)
-  world:draw()
-  love.graphics.setColor(255, 255, 255, 155)
+  local rectangle = dynbody:get_shape()
+  local p1 = (rectangle:get_pos() + correction) * unit
+  local s1 = rectangle:get_size() * unit
+  local grid = world:get_grid()
+
+  for i, j, u in grid:iterate() do
+    if u ~= 0 then
+      local x, y = (j - 1) * unit, (i - 1) * unit
+      love.graphics.setColor(255, 255, 255)
+      love.graphics.rectangle("fill", x, y, unit, unit)
+    end
+  end
+
+  love.graphics.setColor(255, 200, 100, 155)
   love.graphics.rectangle("fill", p1.x, p1.y, s1.x, s1.y)
-  love.graphics.setColor(255, 100, 100, 155)
-  love.graphics.rectangle("fill", p2.x, p2.y, s2.x, s2.y)
 end
 
 --------------------------
@@ -96,7 +97,7 @@ end
 
 function love.load ()
   -- random
-  love.math.setRandomSeed(os.time())
+  love.math.setRandomSeed(tonumber(tostring(os.time()):reverse():sub(1,6)))
   math.random = love.math.random
 
   -- map
