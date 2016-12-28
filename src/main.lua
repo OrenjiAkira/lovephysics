@@ -50,7 +50,8 @@ end
 
 function game.load ()
   local mapwidth, mapheight = window_width / unit, window_height / unit
-  world = physics.new_map(mapwidth, mapheight)
+  --world = physics.new_map(mapwidth, mapheight)
+  world = physics.new_map_from_matrix(require 'dummy_map', unit)
   dynbody = physics.new_body(world, math.random(1, mapwidth - w), math.random(1, mapheight - h), w, h)
   game.printbodies()
 end
@@ -58,12 +59,11 @@ end
 function game.actions ()
   local action = input.get_next_input()
   while action do
-    print("EXECUTING ACTION:", action)
     if execute[action] then execute[action]() end
-    game.printbodies()
     -- done, do next
     action = input.get_next_input()
   end
+  --game.printbodies()
 end
 
 function game.update ()
@@ -77,8 +77,17 @@ function game.draw ()
   local rectangle = dynbody:get_shape()
   local p1 = (rectangle:get_pos() + correction) * unit
   local s1 = rectangle:get_size() * unit
-  --love.graphics.setColor(255, 255, 255)
-  love.graphics.setColor(255, 255, 255, 155)
+  local grid = world:get_grid()
+
+  for i, j, u in grid:iterate() do
+    if u ~= 0 then
+      local x, y = (j - 1) * unit, (i - 1) * unit
+      love.graphics.setColor(255, 255, 255)
+      love.graphics.rectangle("fill", x, y, unit, unit)
+    end
+  end
+
+  love.graphics.setColor(255, 200, 100, 155)
   love.graphics.rectangle("fill", p1.x, p1.y, s1.x, s1.y)
 end
 
@@ -88,7 +97,7 @@ end
 
 function love.load ()
   -- random
-  love.math.setRandomSeed(os.time())
+  love.math.setRandomSeed(tonumber(tostring(os.time()):reverse():sub(1,6)))
   math.random = love.math.random
 
   -- map

@@ -2,7 +2,7 @@
 local matrix = require 'basic.matrix'
 
 local map = require 'basic.prototype' :new {
-  16, 10,
+  16, 10, 32,
   __type = 'map'
 }
 
@@ -12,6 +12,15 @@ function map:__init ()
   for i, j in self.grid:iterate() do
     self.grid:set_cell(i, j, 0)
   end
+  self.unit = self[3]
+end
+
+function map:get_unit ()
+  return self.unit
+end
+
+function map:get_grid ()
+  return self.grid
 end
 
 function map:occupy (x, y)
@@ -38,7 +47,7 @@ function map:get_dimensions ()
   return self:get_width(), self:get_height()
 end
 
-function map:import_from_matrix (m)
+function map:set_from_matrix (m)
   for i, j, u in matrix.iterate(m) do
     if u == 0 then
       self.grid:set_cell(i, j, u)

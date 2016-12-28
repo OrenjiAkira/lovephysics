@@ -1,5 +1,6 @@
 
 local collision_object = require 'basic.prototype' :new {
+  solid = false,
   __type = 'collision_object',
 }
 
@@ -20,6 +21,7 @@ function collision_object:__init ()
   self.layers = {}
   self.collision_layers = {}
   self.map = false
+  self.bodylist = false
   set_table_nums(self.layers, {})
   set_table_nums(self.collision_layers, {})
 end
@@ -30,6 +32,18 @@ end
 
 function collision_object:get_map ()
   return self.map
+end
+
+function collision_object:set_bodylist (b)
+  self.bodylist = b
+end
+
+function collision_object:get_bodylist ()
+  return self.bodylist
+end
+
+function collision_object:is_solid ()
+  return self.solid
 end
 
 function collision_object:set_layers (l)

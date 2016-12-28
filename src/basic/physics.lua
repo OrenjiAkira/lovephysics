@@ -1,5 +1,6 @@
 
 require 'basic.tableutility'
+require 'basic.logarithm'
 
 local physics = {}
 local modules = require 'basic.pack' 'basic.physics'
@@ -8,10 +9,16 @@ local maps = {}
 local bodies = {}
 local collisions = require 'basic.queue' :new { 4096 }
 
-function physics.new_map (width, height)
+function physics.new_map (width, height, unit)
   -- creates new map
-  local map = modules.map:new { width, height }
+  local map = modules.map:new { width, height, unit }
   table.insert(maps, map)
+  return map
+end
+
+function physics.new_map_from_matrix (matrix, unit)
+  local map = modules.map:new { #matrix[1], #matrix, unit }
+  map:set_from_matrix(matrix)
   return map
 end
 
@@ -25,6 +32,7 @@ function physics.new_body (map, x, y, w, h, layers, collision_layers)
   -- creates new body
   local body = modules.dynamic_body:new { x, y, w, h }
   body:set_map(map)
+  body:set_bodylist(bodies)
   body:set_layers(layers or { 1 })
   body:set_collision_layers(collision_layers or { 1 })
   table.insert(bodies, body)
